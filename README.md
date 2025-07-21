@@ -8,5 +8,5 @@ A fun and interactive web-based **Tic-Tac-Toe** game built using **Flask** and *
 - docker run -d -p 5000:5000 --name tic-tac-toe-app tic-tac-toe
 - Visit: http://localhost:5000
 - ![image Alt](https://github.com/Harsha-1323/tic-tac-toe-app/blob/a3e12c89621a145311dd37c757099b996ffc9c9c/Screenshot%20(80).png)
-- ![image Alt](https://github.com/Harsha-1323/tic-tac-toe-app/blob/6b7246be6d235f22352a17e9c061177a9af8cae2/Screenshot%20(81).png)
+- ![image Alt](https://github.com/Harsha-1323/tic-tac-toe-app/blob/167c812bf6682229fc75efa6d9aaf6a3983ad95a/Screenshot%20(83).png)
 - 
