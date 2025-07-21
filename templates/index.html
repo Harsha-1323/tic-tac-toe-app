@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic-Tac-Toe with AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>🎮 Tic-Tac-Toe</h1>
+    <div>
+        <label><input type="radio" name="mode" value="human" checked> 2-Player</label>
+        <label><input type="radio" name="mode" value="ai"> VS AI</label>
+    </div>
+    <div class="board" id="board">
+        {% for i in range(9) %}
+        <div class="cell" data-index="{{ i }}"></div>
+        {% endfor %}
+    </div>
+    <h3 id="status">Your turn: X</h3>
+    <div>
+        <button onclick="startGame()">🔁 New Game</button>
+        <button onclick="resetScore()">🧹 Reset Score</button>
+    </div>
+    <div class="score">
+        <p>X Wins: <span id="scoreX">0</span></p>
+        <p>O Wins: <span id="scoreO">0</span></p>
+        <p>Draws: <span id="scoreDraw">0</span></p>
+    </div>
+    <script>
+        let board = Array(9).fill("");
+        let turn = "X";
+        let gameOver = false;
+
+        function updateUI() {
+            document.querySelectorAll(".cell").forEach((cell, i) => {
+                cell.textContent = board[i];
+            });
+        }
+
+        function startGame() {
+            board = Array(9).fill("");
+            turn = "X";
+            gameOver = false;
+            updateUI();
+            document.getElementById("status").textContent = "Your turn: X";
+        }
+
+        function resetScore() {
+            fetch("/reset", { method: "POST" }).then(() => {
+                document.getElementById("scoreX").textContent = 0;
+                document.getElementById("scoreO").textContent = 0;
+                document.getElementById("scoreDraw").textContent = 0;
+                startGame();
+            });
+        }
+
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.addEventListener("click", () => {
+                if (gameOver) return;
+                const index = cell.dataset.index;
+                if (board[index] !== "") return;
+
+                const mode = document.querySelector('input[name="mode"]:checked').value;
+
+                fetch("/move", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ board, index: parseInt(index), turn, mode })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    board = data.board;
+                    updateUI();
+
+                    if (data.winner) {
+                        gameOver = true;
+                        document.getElementById("status").textContent =
+                            data.winner === "draw" ? "It's a draw!" : `${data.winner} wins!`;
+
+                        document.getElementById("scoreX").textContent = data.score.X;
+                        document.getElementById("scoreO").textContent = data.score.O;
+                        document.getElementById("scoreDraw").textContent = data.score.draw;
+                    } else {
+                        turn = (turn === "X") ? "O" : "X";
+                        document.getElementById("status").textContent = "Your turn: " + turn;
+                    }
+                });
+            });
+        });
+
+        startGame();
+    </script>
+</body>
+</html>
+
